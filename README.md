@@ -49,14 +49,6 @@
     <div class="container">
         <div class="icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
-                <!-- Brain left -->
-                <path fill="#FFB6C1" d="M20 30 Q15 35 20 40 Q25 45 30 40 Q35 35 30 30 Z"/>
-                <!-- Brain right -->
-                <path fill="#FFB6C1" d="M70 30 Q75 35 70 40 Q65 45 60 40 Q55 35 60 30 Z"/>
-                <!-- Brain connection left -->
-                <path fill="#D3D3D3" d="M20 40 L15 50"/>
-                <!-- Brain connection right -->
-                <path fill="#D3D3D3" d="M70 40 L75 50"/>
                 <!-- Tablet -->
                 <rect x="25" y="60" width="50" height="30" rx="5" fill="#90EE90"/>
                 <!-- Tablet screen -->
