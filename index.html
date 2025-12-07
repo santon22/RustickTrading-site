@@ -3,49 +3,362 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Under Construction</title>
+    <title>TicksTock - Master Your Inner Clock</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f0f0f0;
+            background-color: #0f0f19;
             margin: 0;
             padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            color: #333;
+            min-height: 100vh;
+            color: #ffffff;
         }
         .container {
-            text-align: center;
-            background: white;
-            padding: 50px;
+            background-color: #0f0f19;
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            max-width: 500px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
         }
-        h1 {
-            color: #ff6b6b;
-            font-size: 2.5em;
-            margin-bottom: 20px;
+        .title-label {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
-        p {
-            font-size: 1.2em;
+        .progress-label, .avg-label {
+            font-size: 16px;
+            color: #787878;
+            margin-bottom: 10px;
+        }
+        .target-label {
+            font-size: 24px;
+            color: #787878;
+            margin: 10px 0;
+        }
+        .time-label {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .instr-label {
+            font-size: 16px;
+            color: #787878;
+            margin: 20px 0;
             line-height: 1.5;
-            margin-bottom: 30px;
+            white-space: pre-line;
         }
-        .icon {
-            font-size: 4em;
-            margin-bottom: 20px;
+        .btn-frame {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            min-width: 100px;
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .start-btn {
+            background-color: #64ff64;
+            color: #ffffff;
+        }
+        .stop-btn {
+            background-color: #ff6464;
+            color: #ffffff;
+        }
+        .next-btn, .prev-btn {
+            background-color: #64ff64;
+            color: #ffffff;
+        }
+        .prev-btn:disabled, .next-btn:disabled {
+            background-color: #787878;
+        }
+        .complete {
+            color: #64ff64;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="icon">🚧</div>
-        <h1>Under Construction baby!</h1>
-        <p>We will be back soon with new and improved features!</p>
-        <p>Stay tuned for exciting updates!</p>
+        <div class="title-label" id="title-label"></div>
+        <div class="progress-label" id="progress-label"></div>
+        <div class="avg-label" id="avg-label"></div>
+        <div class="target-label" id="target-label"></div>
+        <div class="time-label" id="time-label"></div>
+        <div class="instr-label" id="instr-label"></div>
+        <div class="btn-frame" id="btn-frame">
+            <!-- Buttons will be dynamically inserted here -->
+        </div>
     </div>
+
+    <script>
+        // Level definitions - Two sets for first 17 levels, then fixed
+        const levels = [];
+        // Set 1: Levels 1-10, evenly spaced from 1s to 30s
+        const num1 = 10;
+        const start_t = 1.0;
+        const end1 = 30.0;
+        for (let i = 0; i < num1; i++) {
+            const t = start_t + i * (end1 - start_t) / (num1 - 1);
+            levels.push(Math.round(t * 100) / 100);
+        }
+        // Set 2: Levels 11-17, evenly spaced from 31s to 60s
+        const num2 = 7;
+        const start2 = 31.0;
+        const end2 = 60.0;
+        for (let i = 0; i < num2; i++) {
+            const t = start2 + i * (end2 - start2) / (num2 - 1);
+            levels.push(Math.round(t * 100) / 100);
+        }
+        levels.push(75.0, 90.0, 120.0, 420.0); // 18:75s, 19:90s, 20:2m, 21:7m
+        console.assert(levels.length === 21);
+
+        function formatTime(seconds) {
+            if (seconds <= 0) {
+                return "0.0s";
+            }
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            if (mins === 0) {
+                return `${secs.toFixed(1)}s`;
+            } else if (secs < 0.1) {
+                return `${mins}m`;
+            } else {
+                return `${mins}m ${secs.toFixed(1)}s`;
+            }
+        }
+
+        class TicksTockApp {
+            constructor() {
+                this.currentLevel = 0;
+                this.maxUnlocked = 0;
+                this.state = "start"; // start, running, result, complete
+                this.startTime = 0;
+                this.targetTime = levels[0];
+                this.elapsed = 0.0;
+                this.error = 0.0;
+                this.errorPct = 0.0;
+                this.thisSuccess = false;
+                this.attempts = [];
+                this.timerInterval = null;
+                this.setupUI();
+                this.updateDisplay();
+                this.checkComplete();
+            }
+
+            setupUI() {
+                this.titleLabel = document.getElementById('title-label');
+                this.progressLabel = document.getElementById('progress-label');
+                this.avgLabel = document.getElementById('avg-label');
+                this.targetLabel = document.getElementById('target-label');
+                this.timeLabel = document.getElementById('time-label');
+                this.instrLabel = document.getElementById('instr-label');
+                this.btnFrame = document.getElementById('btn-frame');
+            }
+
+            getRunningAverage() {
+                if (this.attempts.length === 0) {
+                    return 0.0;
+                }
+                const absErrors = this.attempts.map(attempt => Math.abs(attempt['Error_%']));
+                return absErrors.reduce((a, b) => a + b, 0) / absErrors.length;
+            }
+
+            updateDisplay() {
+                // Clear buttons
+                this.btnFrame.innerHTML = '';
+
+                this.titleLabel.textContent = `Level ${this.currentLevel + 1}/21`;
+                this.progressLabel.textContent = `Unlocked up to ${this.maxUnlocked + 1}/21`;
+                const avg = this.getRunningAverage();
+                const avgText = this.attempts.length > 0 ? `Avg Abs % Error: ${avg.toFixed(2)}%` : "No attempts yet";
+                const avgColor = avg < 5 ? '#64ff64' : '#787878';
+                this.avgLabel.textContent = avgText;
+                this.avgLabel.style.color = avgColor;
+
+                let prevBtn, startBtn, stopBtn, nextBtn;
+
+                if (this.state === "start") {
+                    this.targetLabel.textContent = "Target:";
+                    this.timeLabel.textContent = formatTime(this.targetTime);
+                    this.instrLabel.textContent = "Breathe... relax, and focus.\nClick Start to begin.";
+
+                    startBtn = this.createButton("Start", () => this.startTimer(), true, 'start-btn');
+                    prevBtn = this.createButton("Previous", () => this.prevLevel(), this.currentLevel > 0);
+                    nextBtn = this.createButton("Next", () => this.nextLevel(), false);
+
+                    this.btnFrame.appendChild(prevBtn);
+                    this.btnFrame.appendChild(startBtn);
+                    this.btnFrame.appendChild(nextBtn);
+                } else if (this.state === "running") {
+                    this.targetLabel.textContent = `Target: ${formatTime(this.targetTime)}`;
+                    this.timeLabel.textContent = "...";
+                    this.instrLabel.textContent = "Focus on your internal clock.\nClick Stop when you think the target time has passed.";
+
+                    stopBtn = this.createButton("Stop", () => this.stopTimer(), true, 'stop-btn');
+                    this.btnFrame.appendChild(stopBtn);
+                } else if (this.state === "result") {
+                    this.targetLabel.textContent = "Target:";
+                    this.timeLabel.textContent = formatTime(this.targetTime);
+                    const yourTimeText = `Your time: ${formatTime(this.elapsed)}`;
+                    const successText = this.thisSuccess ? '🎉 Success!' : 'Try again!';
+                    this.instrLabel.innerHTML = `${yourTimeText}<br>Error: ${this.error.toFixed(3)}s (${this.errorPct.toFixed(2)}%)<br>${successText}`;
+
+                    startBtn = this.createButton("Retry", () => this.retryLevel(), true, 'start-btn');
+                    nextBtn = this.createButton("Next", () => this.nextLevel(), this.currentLevel < 20 && this.currentLevel + 1 <= this.maxUnlocked);
+                    prevBtn = this.createButton("Previous", () => this.prevLevel(), this.currentLevel > 0);
+
+                    this.btnFrame.appendChild(prevBtn);
+                    this.btnFrame.appendChild(startBtn);
+                    this.btnFrame.appendChild(nextBtn);
+                } else if (this.state === "complete") {
+                    this.titleLabel.textContent = "Congratulations!";
+                    this.titleLabel.classList.add('complete');
+                    this.progressLabel.textContent = "";
+                    this.targetLabel.textContent = "";
+                    this.timeLabel.textContent = "All 21 levels mastered!";
+                    const avg = this.getRunningAverage();
+                    this.instrLabel.textContent = `Your internal clock is legendary.\nFinal Avg Abs % Error: ${avg.toFixed(2)}%\nClose the window or restart.`;
+
+                    startBtn = this.createButton("Restart", () => this.restart(), true, 'start-btn');
+                    this.btnFrame.appendChild(startBtn);
+
+                    // Add export button
+                    const exportBtn = this.createButton("Export CSV", () => this.exportCSV(), true);
+                    this.btnFrame.appendChild(exportBtn);
+                }
+            }
+
+            createButton(text, onClick, enabled = true, className = '') {
+                const btn = document.createElement('button');
+                btn.textContent = text;
+                btn.onclick = onClick;
+                btn.disabled = !enabled;
+                if (className) {
+                    btn.classList.add(className);
+                }
+                if (!enabled) {
+                    btn.classList.add('prev-btn'); // For disabled styling
+                }
+                return btn;
+            }
+
+            checkComplete() {
+                if (this.maxUnlocked >= 21 && this.state === "result") {
+                    this.state = "complete";
+                    this.updateDisplay();
+                } else if (this.state !== "complete") {
+                    setTimeout(() => this.checkComplete(), 100);
+                }
+            }
+
+            startTimer() {
+                this.state = "running";
+                this.startTime = Date.now();
+                this.elapsed = 0.0;
+                this.timerInterval = setInterval(() => {
+                    this.elapsed = (Date.now() - this.startTime) / 1000;
+                    // Optional: update time display during run, but original shows "..."
+                }, 50);
+                this.updateDisplay();
+            }
+
+            stopTimer() {
+                if (this.timerInterval) {
+                    clearInterval(this.timerInterval);
+                    this.timerInterval = null;
+                }
+                this.elapsed = (Date.now() - this.startTime) / 1000;
+                this.error = this.elapsed - this.targetTime;
+                this.errorPct = (this.error / this.targetTime) * 100 || 0.0;
+                this.attempts.push({
+                    'Level': this.currentLevel + 1,
+                    'Target': this.targetTime,
+                    'Elapsed': this.elapsed,
+                    'Error_s': this.error,
+                    'Error_%': this.errorPct
+                });
+                if (this.currentLevel < 3) {
+                    this.thisSuccess = true;
+                } else {
+                    this.thisSuccess = Math.abs(this.error) <= 0.1 * this.targetTime;
+                }
+                if (this.thisSuccess) {
+                    this.maxUnlocked = Math.max(this.maxUnlocked, this.currentLevel + 1);
+                }
+                this.state = "result";
+                this.updateDisplay();
+            }
+
+            retryLevel() {
+                this.state = "start";
+                this.updateDisplay();
+            }
+
+            nextLevel() {
+                if (this.currentLevel < 20 && this.currentLevel + 1 <= this.maxUnlocked) {
+                    this.currentLevel += 1;
+                    this.targetTime = levels[this.currentLevel];
+                    this.state = "start";
+                    this.updateDisplay();
+                }
+            }
+
+            prevLevel() {
+                if (this.currentLevel > 0) {
+                    this.currentLevel -= 1;
+                    this.targetTime = levels[this.currentLevel];
+                    this.state = "start";
+                    this.updateDisplay();
+                }
+            }
+
+            restart() {
+                this.currentLevel = 0;
+                this.maxUnlocked = 0;
+                this.targetTime = levels[0];
+                this.attempts = [];
+                this.state = "start";
+                this.titleLabel.classList.remove('complete');
+                this.updateDisplay();
+            }
+
+            exportCSV() {
+                if (this.attempts.length === 0) {
+                    alert("No attempts to export yet.");
+                    return;
+                }
+                const headers = ['Level', 'Target', 'Elapsed', 'Error_s', 'Error_%'];
+                let csvContent = headers.join(',') + '\n';
+                this.attempts.forEach(attempt => {
+                    csvContent += Object.values(attempt).join(',') + '\n';
+                });
+                const blob = new Blob([csvContent], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'ticks_tock_attempts.csv';
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new TicksTockApp();
+        });
+    </script>
 </body>
 </html>
