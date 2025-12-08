@@ -5,42 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HypnoTicks - EEG Trading Analyzer</title>
     <style>
-        body { 
-            font-family: 'Arial', sans-serif; 
-            background-color: #1e1e1e; 
-            color: white; 
-            margin: 0; 
-            padding: 20px; 
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #1e1e1e;
+            color: white;
+            margin: 0;
+            padding: 20px;
         }
-        .container { 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            text-align: center; 
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
         }
-        h1 { 
-            color: #4a90e2; 
+        .coming-soon {
+            font-size: 56px;
+            font-weight: bold;
+            color: #64ff64;
+            text-shadow: 0 0 20px rgba(100, 255, 100, 0.7);
+            margin: 40px 0 20px;
+            animation: pulse 2.5s infinite;
         }
-        .demo-link { 
-            background: #4a90e2; 
-            color: white; 
-            padding: 10px 20px; 
-            text-decoration: none; 
-            border-radius: 5px; 
-            display: inline-block; 
-            margin: 20px; 
+        @keyframes pulse {
+            0% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.03); }
+            100% { opacity: 0.8; transform: scale(1); }
         }
-        .features { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 20px; 
-            margin-top: 40px; 
+        h1 {
+            color: #4a90e2;
+            margin-top: 0;
         }
-        .feature { 
-            background: #333; 
-            padding: 15px; 
-            border-radius: 5px; 
+        .demo-link {
+            background: #4a90e2;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            margin: 20px;
         }
-
+        .features {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-top: 40px;
+        }
+        .feature {
+            background: #333;
+            padding: 15px;
+            border-radius: 5px;
+        }
         /* Game Styles */
         #game-wrapper {
             background-color: #0f0f19;
@@ -100,6 +113,7 @@
             justify-content: center;
             gap: 10px;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
         button {
             padding: 10px 20px;
@@ -118,37 +132,27 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
-        .start-btn {
-            background-color: #64ff64;
-            color: #ffffff;
-        }
-        .stop-btn {
-            background-color: #ff6464;
-            color: #ffffff;
-        }
-        .next-btn, .prev-btn {
-            background-color: #64ff64;
-            color: #ffffff;
-        }
-        .prev-btn:disabled, .next-btn:disabled {
-            background-color: #787878;
-        }
-        .complete {
-            color: #64ff64;
-        }
+        .start-btn { background-color: #64ff64; color: #000; }
+        .stop-btn { background-color: #ff6464; color: #fff; }
+        .next-btn, .prev-btn { background-color: #64ff64; color: #000; }
+        .prev-btn:disabled, .next-btn:disabled { background-color: #787878; }
+        .complete { color: #64ff64; }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Coming Soon Banner -->
+        <div class="coming-soon">Coming Soon in 2026!</div>
+
         <h1>HypnoTicks</h1>
-        <p>Real-time EEG analysis for emotion-driven trading decisions. Track Fear, Greed, Hypnotic Depth, and More.</p>
-        <p><medium>Play a 🧠 training game below to start mastering your internal clock .</medium></p>
-       
+        <p>Real-time EEG analysis for emotion-driven trading decisions. Become the Indicator!</p>
+        <p><medium>Play a 🧠 training game below to start mastering your internal clock.</medium></p>
+      
         <div class="features">
             <div class="feature"><h3>😢Emotional Profiles😀</h3><p>Monitor and Track 14 emotions like Fear & Greed in real-time.</p></div>
-            <div class="feature"><h3>🌀Hypnosis Tracking👁️</h3><p>Track hypnotic depth and time distortion.</p></div>
+            <div class="feature"><h3>🌀Hypnosis Tracking👁️</h3><p>Track hypnosis factors and time distortions.</p></div>
             <div class="feature"><h3>❓Memory🧠</h3><p>Remembers your success and mistakes.</p></div>
-            <div class="feature"><h3>🤔Decisions🤯</h3><p>Overrides trade decisions based on brain state quality when needed.</p></div>
+            <div class="feature"><h3>🤔Decisions🤯</h3><p>Overrides bad trade decisions based on brain state quality.</p></div>
         </div>
     </div>
 
@@ -161,12 +165,25 @@
             <div class="target-label" id="target-label"></div>
             <div class="time-label" id="time-label"></div>
             <div class="instr-label" id="instr-label"></div>
-            <div class="btn-frame" id="btn-frame">
-                <!-- Buttons will be dynamically inserted here -->
+            <div class="btn-frame" id="btn-frame"></div>
+        </div>
+    
+            <!-- Instructions (new) -->
+            <div class="instructions-box">
+                <h3>How to Play</h3>
+                <p><strong>Goal:</strong> Stop the timer as close as possible to the target time — using only your mind.</p>
+                <p><strong>Steps:</strong><br>
+                1. Press <strong>Start</strong><br>
+                2. Breathe slowly and feel time pass<br>
+                3. When you <strong>Feel</strong> the target time has passed → press <strong>Stop</strong></p>
+                <p><strong>Success:</strong><br>
+                • Levels 1–3: always pass<br>
+                • Level 4+: within ±10% of target</p>
+                <p>Master all 21 levels to prove you have an elite internal clock.</p>
             </div>
         </div>
     </div>
-
+	
     <script>
         // Level definitions - Two sets for first 17 levels, then fixed
         const levels = [];
@@ -187,21 +204,16 @@
             levels.push(Math.round(t * 100) / 100);
         }
         levels.push(75.0, 90.0, 120.0, 420.0); // 18:75s, 19:90s, 20:2m, 21:7m
-        console.assert(levels.length === 21);
+
         function formatTime(seconds) {
-            if (seconds <= 0) {
-                return "0.0s";
-            }
+            if (seconds <= 0) return "0.0s";
             const mins = Math.floor(seconds / 60);
             const secs = seconds % 60;
-            if (mins === 0) {
-                return `${secs.toFixed(1)}s`;
-            } else if (secs < 0.1) {
-                return `${mins}m`;
-            } else {
-                return `${mins}m ${secs.toFixed(1)}s`;
-            }
+            if (mins === 0) return `${secs.toFixed(1)}s`;
+            else if (secs < 0.1) return `${mins}m`;
+            else return `${mins}m ${secs.toFixed(1)}s`;
         }
+
         class TicksTockApp {
             constructor() {
                 this.currentLevel = 0;
@@ -229,14 +241,11 @@
                 this.btnFrame = document.getElementById('btn-frame');
             }
             getRunningAverage() {
-                if (this.attempts.length === 0) {
-                    return 0.0;
-                }
-                const absErrors = this.attempts.map(attempt => Math.abs(attempt['Error_%']));
+                if (this.attempts.length === 0) return 0.0;
+                const absErrors = this.attempts.map(a => Math.abs(a['Error_%']));
                 return absErrors.reduce((a, b) => a + b, 0) / absErrors.length;
             }
             updateDisplay() {
-                // Clear buttons
                 this.btnFrame.innerHTML = '';
                 this.titleLabel.textContent = `Level ${this.currentLevel + 1}/21`;
                 this.progressLabel.textContent = `Unlocked up to ${this.maxUnlocked + 1}/21`;
@@ -245,7 +254,9 @@
                 const avgColor = avg < 5 ? '#64ff64' : '#b0b0b0';
                 this.avgLabel.textContent = avgText;
                 this.avgLabel.style.color = avgColor;
+
                 let prevBtn, startBtn, stopBtn, nextBtn;
+
                 if (this.state === "start") {
                     this.targetLabel.textContent = "Target:";
                     this.timeLabel.textContent = formatTime(this.targetTime);
@@ -256,17 +267,19 @@
                     this.btnFrame.appendChild(prevBtn);
                     this.btnFrame.appendChild(startBtn);
                     this.btnFrame.appendChild(nextBtn);
+
                 } else if (this.state === "running") {
                     this.targetLabel.textContent = `Target: ${formatTime(this.targetTime)}`;
                     this.timeLabel.textContent = "...";
                     this.instrLabel.textContent = "Focus on your internal clock.\nClick Stop when you think the target time has passed.";
                     stopBtn = this.createButton("Stop", () => this.stopTimer(), true, 'stop-btn');
                     this.btnFrame.appendChild(stopBtn);
+
                 } else if (this.state === "result") {
                     this.targetLabel.textContent = "Target:";
                     this.timeLabel.textContent = formatTime(this.targetTime);
                     const yourTimeText = `Your time: ${formatTime(this.elapsed)}`;
-                    const successText = this.thisSuccess ? '🎉 Success!' : 'Try again!';
+                    const successText = this.thisSuccess ? 'Success!' : 'Try again!';
                     this.instrLabel.innerHTML = `${yourTimeText}<br>Error: ${this.error.toFixed(3)}s (${this.errorPct.toFixed(2)}%)<br>${successText}`;
                     startBtn = this.createButton("Retry", () => this.retryLevel(), true, 'start-btn');
                     nextBtn = this.createButton("Next", () => this.nextLevel(), this.currentLevel < 20 && this.currentLevel + 1 <= this.maxUnlocked);
@@ -274,6 +287,7 @@
                     this.btnFrame.appendChild(prevBtn);
                     this.btnFrame.appendChild(startBtn);
                     this.btnFrame.appendChild(nextBtn);
+
                 } else if (this.state === "complete") {
                     this.titleLabel.textContent = "Congratulations!";
                     this.titleLabel.classList.add('complete');
@@ -283,9 +297,8 @@
                     const avg = this.getRunningAverage();
                     this.instrLabel.textContent = `Your internal clock is legendary.\nFinal Avg Abs % Error: ${avg.toFixed(2)}%\nClose the window or restart.`;
                     startBtn = this.createButton("Restart", () => this.restart(), true, 'start-btn');
-                    this.btnFrame.appendChild(startBtn);
-                    // Add export button
                     const exportBtn = this.createButton("Export CSV", () => this.exportCSV(), true);
+                    this.btnFrame.appendChild(startBtn);
                     this.btnFrame.appendChild(exportBtn);
                 }
             }
@@ -294,12 +307,8 @@
                 btn.textContent = text;
                 btn.onclick = onClick;
                 btn.disabled = !enabled;
-                if (className) {
-                    btn.classList.add(className);
-                }
-                if (!enabled) {
-                    btn.classList.add('prev-btn'); // For disabled styling
-                }
+                if (className) btn.classList.add(className);
+                if (!enabled) btn.classList.add('prev-btn');
                 return btn;
             }
             checkComplete() {
@@ -316,15 +325,11 @@
                 this.elapsed = 0.0;
                 this.timerInterval = setInterval(() => {
                     this.elapsed = (Date.now() - this.startTime) / 1000;
-                    // Optional: update time display during run, but original shows "..."
                 }, 50);
                 this.updateDisplay();
             }
             stopTimer() {
-                if (this.timerInterval) {
-                    clearInterval(this.timerInterval);
-                    this.timerInterval = null;
-                }
+                if (this.timerInterval) clearInterval(this.timerInterval);
                 this.elapsed = (Date.now() - this.startTime) / 1000;
                 this.error = this.elapsed - this.targetTime;
                 this.errorPct = (this.error / this.targetTime) * 100 || 0.0;
@@ -346,10 +351,7 @@
                 this.state = "result";
                 this.updateDisplay();
             }
-            retryLevel() {
-                this.state = "start";
-                this.updateDisplay();
-            }
+            retryLevel() { this.state = "start"; this.updateDisplay(); }
             nextLevel() {
                 if (this.currentLevel < 20 && this.currentLevel + 1 <= this.maxUnlocked) {
                     this.currentLevel += 1;
@@ -376,28 +378,85 @@
                 this.updateDisplay();
             }
             exportCSV() {
-                if (this.attempts.length === 0) {
-                    alert("No attempts to export yet.");
-                    return;
-                }
+                if (this.attempts.length === 0) { alert("No attempts to export yet."); return; }
                 const headers = ['Level', 'Target', 'Elapsed', 'Error_s', 'Error_%'];
-                let csvContent = headers.join(',') + '\n';
-                this.attempts.forEach(attempt => {
-                    csvContent += Object.values(attempt).join(',') + '\n';
+                let csv = headers.join(',') + '\n';
+                this.attempts.forEach(a => {
+                    csv += Object.values(a).join(',') + '\n';
                 });
-                const blob = new Blob([csvContent], { type: 'text/csv' });
+                const blob = new Blob([csv], { type: 'text/csv' });
                 const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'ticks_tock_attempts.csv';
-                a.click();
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'ticks_tock_attempts.csv';
+                link.click();
                 URL.revokeObjectURL(url);
             }
         }
-        // Initialize the app when DOM is loaded
+
         document.addEventListener('DOMContentLoaded', () => {
             new TicksTockApp();
         });
     </script>
+	    <!-- Social Media Footer -->
+    <footer style="margin-top: 100px; padding: 50px 20px; background-color: #0f0f19; border-top: 1px solid #404050;">
+        <div style="max-width: 1200px; margin: 0 auto; text-align: center;">
+            <p style="margin-bottom: 20px; color: #b0b0b0; font-size: 18px;">Join the community & stay connected</p>
+            
+            <div style="display: flex; justify-content: center; gap: 50px; flex-wrap: wrap; align-items: center;">
+                
+                <!-- YouTube -->
+                <a href="https://youtube.com/" target="_blank" style="text-decoration: none;">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" 
+                         alt="YouTube" width="48" height="48">
+                    <span style="display: block; color: #fff; margin-top: 8px; font-size: 14px;">Youtube</span>
+                </a>
+
+                <!-- X (Twitter) -->
+                <a href="https://x.com/mr_rustickwicks?t=vARMZUQ123tmy253yuLw4g&s=09" target="_blank" style="text-decoration: none;">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/60/X_logo_2023_%28white%29.png"
+                         alt="X" width="48" height="48" style="filter: brightness(0) invert(1);">
+                    <span style="display: block; color: #fff; margin-top: 8px; font-size: 14px;">X</span>
+                </a>
+
+                <!-- LinkedIn -->
+                <a href="https://www.linkedin.com/in/rusticktrading/" target="_blank" style="text-decoration: none;">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" 
+                         alt="LinkedIn" width="48" height="48">
+                    <span style="display: block; color: #fff; margin-top: 8px; font-size: 14px;">LinkedIn</span>
+                </a>
+
+                <!-- Discord -->
+                <a href="https://discord.gg/" target="_blank" style="text-decoration: none;">
+                    <img src="https://discord.com/assets/discord-symbol-white.svg"
+                         alt="Discord" width="48" height="48">
+                    <span style="display: block; color: #fff; margin-top: 8px; font-size: 14px;">Comming in 2026!</span>
+                </a>
+
+                <!-- Email -->
+                <a href="mailto:rusticktrading@yahoo.com" style="text-decoration: none;">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" 
+                         alt="Email" width="48" height="48">
+                    <span style="display: block; color: #fff; margin-top: 8px; font-size: 14px;">Email Me for Inquirys</span>
+                </a>
+            </div>
+
+            <p style="margin-top: 40px; color: #555; font-size: 14px;">
+                © 2025 HypnoTicks • Mastering the mind for better trading
+            </p>
+        </div>
+    </footer>
+
+    <style>
+        footer a img {
+            transition: transform 0.25s ease;
+        }
+        footer a:hover img {
+            transform: scale(1.2) translateY(-4px);
+        }
+        footer a:hover span {
+            color: #64ff64;
+        }
+    </style>
 </body>
 </html>
